@@ -3,8 +3,9 @@ var express = require('express')
   , util = require('util')
   , BitbucketStrategy = require('passport-bitbucket-oauth2').Strategy;
 
-var BITBUCKET_CLIENT_ID = "--insert-bitbucket-client-id-here--"
-var BITBUCKET_CLIENT_SECRET = "--insert-bitbucket-client-secret-here--";
+var BITBUCKET_CLIENT_ID = "XXXXXXX"
+var BITBUCKET_CLIENT_SECRET = "XXXXXX";
+var TOKEN ="";
 
 
 // Passport session setup.
@@ -33,6 +34,7 @@ passport.use(new BitbucketStrategy({
     callbackURL: "http://127.0.0.1:3000/auth/bitbucket/callback"
   },
   function(token, tokenSecret, profile, done) {
+    TOKEN = token;
     // asynchronous verification, for effect...
     process.nextTick(function () {
       
@@ -40,7 +42,7 @@ passport.use(new BitbucketStrategy({
       // represent the logged-in user.  In a typical application, you would want
       // to associate the Bitbucket account with a user record in your database,
       // and return that user instead.
-      return done(null, profile);
+      return done(null, profile, token);
     });
   }
 ));
@@ -69,7 +71,7 @@ app.configure(function() {
 
 
 app.get('/', function(req, res){
-  res.render('index', { user: req.user });
+  res.render('index', { user: req.user , token: TOKEN});
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
